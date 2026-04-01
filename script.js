@@ -7,14 +7,15 @@ const TOP_RATED_LIMIT = 5;
 const siteLogo = document.getElementById("site-logo");
 const heroWords = document.querySelectorAll(".hero-word");
 const introSound = document.getElementById("intro-sound");
+const entryOverlay = document.getElementById("entry-overlay");
+const entryStartButton = document.getElementById("entry-start-button");
 const audioToggleButton = document.getElementById("audio-toggle");
 const movieGrid = document.getElementById("movie-grid");
 const topRatedList = document.getElementById("top-rated-list");
 const KOREAN_TEXT_REGEX = /[가-힣]/;
-const INTRO_FALLBACK_EVENTS = ["pointerdown", "keydown", "touchstart"];
-const AUTO_PLAY_RETRY_DELAYS = [0, 60, 180, 500, 1200, 2500];
 
 let userStoppedMusic = false;
+let introStarted = false;
 
 function formatDate(dateString) {
   if (!dateString) return "개봉일 정보 없음";
@@ -77,42 +78,6 @@ function playHeroWordsIntro() {
   });
 }
 
-function removeIntroFallbackListeners() {
-  INTRO_FALLBACK_EVENTS.forEach((eventName) => {
-    window.removeEventListener(eventName, handleIntroSoundFallback);
-  });
-
-  window.removeEventListener("pageshow", handleIntroSoundFallback);
-  window.removeEventListener("focus", handleIntroSoundFallback);
-  window.removeEventListener("load", handleIntroSoundFallback);
-  document.removeEventListener("visibilitychange", handleIntroSoundFallback);
-
-  if (introSound) {
-    introSound.removeEventListener("loadeddata", handleIntroSoundFallback);
-    introSound.removeEventListener("loadedmetadata", handleIntroSoundFallback);
-    introSound.removeEventListener("canplay", handleIntroSoundFallback);
-    introSound.removeEventListener("canplaythrough", handleIntroSoundFallback);
-  }
-}
-
-function addIntroFallbackListeners() {
-  INTRO_FALLBACK_EVENTS.forEach((eventName) => {
-    window.addEventListener(eventName, handleIntroSoundFallback);
-  });
-
-  window.addEventListener("pageshow", handleIntroSoundFallback);
-  window.addEventListener("focus", handleIntroSoundFallback);
-  window.addEventListener("load", handleIntroSoundFallback);
-  document.addEventListener("visibilitychange", handleIntroSoundFallback);
-
-  if (introSound) {
-    introSound.addEventListener("loadeddata", handleIntroSoundFallback);
-    introSound.addEventListener("loadedmetadata", handleIntroSoundFallback);
-    introSound.addEventListener("canplay", handleIntroSoundFallback);
-    introSound.addEventListener("canplaythrough", handleIntroSoundFallback);
-  }
-}
-
 function updateAudioToggleButton() {
   if (!audioToggleButton || !introSound) {
     return;
@@ -135,9 +100,8 @@ async function tryPlayIntroSound(force = false) {
   }
 
   try {
-    // Start muted first to improve autoplay success, then unmute immediately.
-    introSound.defaultMuted = true;
-    introSound.muted = true;
+    introSound.defaultMuted = false;
+    introSound.muted = false;
     introSound.volume = 0.6;
     introSound.loop = true;
     if (introSound.readyState === 0) {
@@ -148,16 +112,6 @@ async function tryPlayIntroSound(force = false) {
     }
     await introSound.play();
 
-    window.setTimeout(() => {
-      if (!userStoppedMusic && introSound) {
-        introSound.defaultMuted = false;
-        introSound.muted = false;
-        introSound.volume = 0.6;
-        updateAudioToggleButton();
-      }
-    }, 30);
-
-    removeIntroFallbackListeners();
     updateAudioToggleButton();
     return true;
   } catch (error) {
@@ -165,24 +119,6 @@ async function tryPlayIntroSound(force = false) {
     console.warn("배경 음악을 재생하지 못했습니다.", error);
     return false;
   }
-}
-
-function handleIntroSoundFallback() {
-  if (document.visibilityState === "hidden") {
-    return;
-  }
-
-  void tryPlayIntroSound();
-}
-
-function scheduleAutoPlayRetries() {
-  AUTO_PLAY_RETRY_DELAYS.forEach((delay) => {
-    window.setTimeout(() => {
-      if (!userStoppedMusic && introSound && introSound.paused) {
-        void tryPlayIntroSound();
-      }
-    }, delay);
-  });
 }
 
 function stopIntroSound() {
@@ -195,7 +131,6 @@ function stopIntroSound() {
   introSound.defaultMuted = false;
   introSound.muted = false;
   userStoppedMusic = true;
-  removeIntroFallbackListeners();
   updateAudioToggleButton();
 }
 
@@ -215,15 +150,41 @@ function handleAudioToggleClick() {
   stopIntroSound();
 }
 
-function initializeIntroExperience() {
-  addIntroFallbackListeners();
-  scheduleAutoPlayRetries();
+function hideEntryOverlay() {
+  if (!entryOverlay) {
+    document.body.classList.remove("intro-active");
+    return;
+  }
+
+  entryOverlay.classList.add("is-hidden");
+  document.body.classList.remove("intro-active");
+}
+
+async function handleEntryStart() {
+  if (introStarted) {
+    return;
+  }
+
+  introStarted = true;
+  userStoppedMusic = false;
+
+  await tryPlayIntroSound(true);
   playLogoIntro();
   playHeroWordsIntro();
+  hideEntryOverlay();
+}
+
+function initializeIntroExperience() {
   updateAudioToggleButton();
 
   if (audioToggleButton) {
     audioToggleButton.addEventListener("click", handleAudioToggleClick);
+  }
+
+  if (entryStartButton) {
+    entryStartButton.addEventListener("click", () => {
+      void handleEntryStart();
+    });
   }
 
   if (introSound) {

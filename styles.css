@@ -10,6 +10,10 @@ body {
   color: #ffffff;
 }
 
+body.intro-active {
+  overflow: hidden;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -19,6 +23,84 @@ body::before {
     linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(20, 20, 20, 0.96));
   pointer-events: none;
   z-index: -1;
+}
+
+.entry-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(229, 9, 20, 0.22), transparent 28%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.96), rgba(10, 10, 10, 0.98));
+  transition:
+    opacity 0.45s ease,
+    visibility 0.45s ease;
+}
+
+.entry-overlay.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.entry-panel {
+  width: min(100%, 580px);
+  padding: 40px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  background: rgba(14, 14, 14, 0.88);
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(14px);
+}
+
+.entry-eyebrow {
+  margin: 0 0 14px;
+  color: #e50914;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.entry-logo {
+  margin: 0;
+  color: #e50914;
+  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.entry-text {
+  margin: 18px auto 0;
+  max-width: 420px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+}
+
+.entry-start-button {
+  margin-top: 28px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 999px;
+  background: #e50914;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+  box-shadow: 0 16px 30px rgba(229, 9, 20, 0.28);
+}
+
+.entry-start-button:hover {
+  transform: translateY(-2px);
+  background: #ff1f2d;
+  box-shadow: 0 20px 34px rgba(229, 9, 20, 0.34);
 }
 
 .hero {
@@ -377,6 +459,15 @@ body::before {
   .hero {
     min-height: 46vh;
     padding: 20px 5vw 40px;
+  }
+
+  .entry-panel {
+    padding: 32px 20px;
+    border-radius: 24px;
+  }
+
+  .entry-text {
+    font-size: 0.96rem;
   }
 
   .hero-layout {

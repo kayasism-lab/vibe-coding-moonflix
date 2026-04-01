@@ -12,7 +12,21 @@
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body class="intro-active">
+    <div id="entry-overlay" class="entry-overlay">
+      <div class="entry-panel">
+        <p class="entry-eyebrow">WELCOME TO</p>
+        <h1 class="entry-logo">Mr. MOON FLIX</h1>
+        <p class="entry-text">
+          오늘의 하루를 영화와 함께 시작하려면<br />
+          아래 버튼을 눌러 입장하세요.
+        </p>
+        <button id="entry-start-button" class="entry-start-button" type="button">
+          입장하기
+        </button>
+      </div>
+    </div>
+
     <header class="hero">
       <div class="overlay"></div>
       <nav class="navbar">
@@ -66,10 +80,8 @@
       id="intro-sound"
       src="./assets/cinema-paradiso-theme.mp3"
       preload="auto"
-      autoplay
       loop
       playsinline
-      muted
     ></audio>
     <script src="./script.js"></script>
   </body>
