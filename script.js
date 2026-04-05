@@ -1,4 +1,4 @@
-const API_KEY = "8e631e95edc477c08f10a7b14a29b66c";
+const API_KEY = "?";
 const NOW_PLAYING_API_URL = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=ko-KR&page=1`;
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const MAX_RELEASE_AGE_DAYS = 60;
