@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 
 const app = express();
@@ -64,11 +65,22 @@ tmdbRouter.get(/.*/, async (req, res) => {
 
 app.use("/api/tmdb", tmdbRouter);
 
-const publicDir = path.join(__dirname, "public");
-app.use(express.static(publicDir));
+const publicDir = path.resolve(__dirname, "public");
+const indexHtml = path.join(publicDir, "index.html");
+
+app.get("/", (req, res, next) => {
+  res.sendFile(indexHtml, (err) => {
+    if (err) next(err);
+  });
+});
+
+app.use(express.static(publicDir, { index: false }));
 
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
+    if (!fs.existsSync(indexHtml)) {
+      console.error("Missing file (clone/pull repo):", indexHtml);
+    }
     console.log(`Open http://localhost:${PORT}`);
   });
 }
