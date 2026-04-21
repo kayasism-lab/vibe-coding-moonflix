@@ -11,7 +11,8 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (
     origin &&
-    /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(origin)
+    (/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(origin) ||
+      /^https:\/\/[^/]+\.vercel\.app$/i.test(origin))
   ) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
