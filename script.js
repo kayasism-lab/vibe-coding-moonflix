@@ -1,5 +1,27 @@
-const API_KEY = "?";
-const NOW_PLAYING_API_URL = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=ko-KR&page=1`;
+const DEFAULT_API_PORT = "3001";
+
+function getApiOrigin() {
+  const el = document.querySelector('meta[name="api-origin"]');
+  if (el) {
+    const raw = el.getAttribute("content");
+    if (raw != null && raw.trim() !== "") {
+      return raw.trim().replace(/\/$/, "");
+    }
+  }
+
+  if (window.location.protocol === "file:") {
+    return `http://127.0.0.1:${DEFAULT_API_PORT}`;
+  }
+
+  const port = window.location.port;
+  if (!port || port === DEFAULT_API_PORT) {
+    return "";
+  }
+
+  return `${window.location.protocol}//${window.location.hostname}:${DEFAULT_API_PORT}`;
+}
+
+const NOW_PLAYING_API_URL = `${getApiOrigin()}/api/tmdb/movie/now_playing?language=ko-KR&page=1`;
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const MAX_RELEASE_AGE_DAYS = 60;
 const TOP_RATED_LIMIT = 5;
