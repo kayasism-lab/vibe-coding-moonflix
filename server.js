@@ -62,8 +62,14 @@ tmdbRouter.get(/.*/, async (req, res) => {
 });
 
 app.use("/api/tmdb", tmdbRouter);
-app.use(express.static(path.join(__dirname)));
 
-app.listen(PORT, () => {
-  console.log(`Open http://localhost:${PORT}`);
-});
+const publicDir = path.join(__dirname, "public");
+app.use(express.static(publicDir));
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Open http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
